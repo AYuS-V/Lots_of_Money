@@ -3,9 +3,9 @@
   hosts: ubuntu
   become: yes
   vars:
-    local_zip_file: "/home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/angular-test.zip"
+    local_zip_file: "/home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip"
     destination_dir: "/var/www/html"
-    remote_temp_file: "/tmp/angular-test.zip"
+    remote_temp_file: "/tmp/lots_of_money.zip"
     application_url: "http://{{ ansible_fqdn }}"
   tasks:
     - name: Check if Nginx is installed
