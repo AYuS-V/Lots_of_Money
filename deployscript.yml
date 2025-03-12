@@ -1,6 +1,6 @@
 ---
 - name: Ensure Nginx is installed, configured, and deploy Angular build
-  hosts: aayush
+  hosts: ubuntu
   become: yes
   vars:
     local_zip_file: "/home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/angular-test.zip"
