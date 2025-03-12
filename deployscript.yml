@@ -1,6 +1,6 @@
 ---
 - name: Ensure Nginx is installed, configured, and deploy Angular build
-  hosts: ubuntu
+  hosts: aayush_ubuntu
   become: yes
   vars:
     local_zip_file: "/home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip"
@@ -22,7 +22,7 @@
         dest: /etc/nginx/sites-available/angular_app
         content: |
           server {
-              listen 6969;
+              listen 4111;
               server_name {{ ansible_fqdn }};
               root {{ destination_dir }};
               index index.html;
