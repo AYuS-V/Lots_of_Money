@@ -1,77 +1,67 @@
 ---
-- name: Ensure Nginx is installed, configured, and deploy Angular build
+- name: Check and deploy website on NGINX server
   hosts: aayush_ubuntu
   become: yes
-  vars:
-    local_zip_file: "/home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip"
-    destination_dir: "/var/www/html"
-    remote_temp_file: "/tmp/lots_of_money.zip"
-    application_url: "http://{{ ansible_fqdn }}"
   tasks:
-    - name: Check if Nginx is installed
-      command: which nginx
-      register: nginx_installed
+    - name: Check if NGINX is installed
+      command: nginx -v
       ignore_errors: yes
-    - name: Install Nginx if not installed
+      register: nginx_check
+
+    - name: Install NGINX if not installed
       apt:
         name: nginx
         state: present
-      when: nginx_installed.rc != 0
-    - name: Create Nginx configuration file for the Angular application
-      copy:
-        dest: /etc/nginx/sites-available/angular_app
-        content: |
-          server {
-              listen 3333;
-              server_name {{ ansible_fqdn }};
-              root {{ destination_dir }};
-              index index.html;
-              location / {
-                  try_files $uri $uri/ /index.html;
-              }
-          }
-    - name: Enable Nginx configuration
+      when: nginx_check.rc != 0
+
+    - name: Ensure NGINX is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Remove old website content
       file:
-        src: /etc/nginx/sites-available/angular_app
-        dest: /etc/nginx/sites-enabled/angular_app
-        state: link
-    - name: Remove default Nginx configuration if it exists
+        path: /var/www/html/
+        state: absent
+
+    - name: Create website directory
+      file:
+        path: /var/www/html/
+        state: directory
+
+    - name: Copy website zip file to host
+      copy:
+        src:  /home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip
+        dest: /tmp/project.zip
+
+    - name: Unzip website content
+      unarchive:
+        src: /tmp/project.zip
+        dest: /var/www/html/
+        remote_src: yes
+
+    - name: Remove default NGINX configuration
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
-      ignore_errors: yes
-    - name: Test Nginx configuration
-      command: nginx -t
-      register: nginx_test
-      failed_when: nginx_test.rc != 0
-    - name: Reload Nginx to apply configuration changes
-      service:
-        name: nginx
-        state: reloaded
-    - name: Copy the Angular build zip from the local machine to the remote host
-      copy:
-        src: "{{ local_zip_file }}"
-        dest: "{{ remote_temp_file }}"
-    - name: Create destination directory if it doesn't exist
+      notify: Restart NGINX
+
+    - name: Create NGINX configuration for new website
+      template:
+        src: nginx_site.j2
+        dest: /etc/nginx/sites-available/my_website
+      notify: Restart NGINX
+
+    - name: Enable new NGINX site
       file:
-        path: "{{ destination_dir }}"
-        state: directory
-    - name: Unzip the Angular build on the remote host
-      unarchive:
-        src: "{{ remote_temp_file }}"
-        dest: "{{ destination_dir }}"
-        remote_src: yes
-    - name: Set permissions for the destination directory
-      file:
-        path: "{{ destination_dir }}"
-        state: directory
-        owner: www-data
-        group: www-data
-        recurse: yes
-    - name: Restart Nginx to apply changes
+        src: /etc/nginx/sites-available/my_website
+        dest: /etc/nginx/sites-enabled/my_website
+        state: link
+      notify: Restart NGINX
+
+  handlers:
+    - name: Restart NGINX
       service:
         name: nginx
         state: restarted
-    - name: Display application URL
-      debug:
-        msg: "The application has been deployed and is accessible at {{ application_url }}"
