@@ -1,6 +1,6 @@
 ---
 - name: Check and deploy website on NGINX server
-  hosts: aayush_ubnutu
+  hosts: aayush_ubuntu
   become: yes
   tasks:
     - name: Check if NGINX is installed
