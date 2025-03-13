@@ -1,6 +1,6 @@
 ---
 - name: Check and deploy website on NGINX server
-  hosts: aayush_ubuntu
+  hosts: all
   become: yes
   tasks:
     - name: Check if NGINX is installed
@@ -32,7 +32,7 @@
 
     - name: Copy website zip file to host
       copy:
-        src:  /home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip
+        src: /path/to/your/project.zip
         dest: /tmp/project.zip
 
     - name: Unzip website content
@@ -48,8 +48,19 @@
       notify: Restart NGINX
 
     - name: Create NGINX configuration for new website
-      template:
-        src: nginx_site.j2
+      copy:
+        content: |
+          server {
+              listen 8088;
+              192.168.0.107;
+
+              root /var/www/html;
+              index index.html index.htm;
+
+              location / {
+                  try_files $uri $uri/ =404;
+              }
+          }
         dest: /etc/nginx/sites-available/my_website
       notify: Restart NGINX
 
