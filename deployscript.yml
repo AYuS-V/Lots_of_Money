@@ -1,6 +1,6 @@
 ---
 - name: Check and deploy website on NGINX server
-  hosts: all
+  hosts: localhost
   become: yes
   tasks:
     - name: Check if NGINX is installed
