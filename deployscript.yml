@@ -32,7 +32,7 @@
 
     - name: Copy website zip file to host
       copy:
-        src: /path/to/your/project.zip
+        src: /home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip
         dest: /tmp/project.zip
 
     - name: Unzip website content
