@@ -22,7 +22,7 @@
         dest: /etc/nginx/sites-available/angular_app
         content: |
           server {
-              listen 4111;
+              listen 3333;
               server_name {{ ansible_fqdn }};
               root {{ destination_dir }};
               index index.html;
