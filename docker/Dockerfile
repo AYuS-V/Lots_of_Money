@@ -8,7 +8,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY /tmp/latest-build/app_build/ /usr/share/nginx/html/
 
 # Copy custom nginx configuration
-COPY /tmp/latest-build/docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY /tmp/latest-build/docker/nginx/ /etc/nginx/conf.d/default.conf
 
 # Expose port 4545
 EXPOSE 4545
