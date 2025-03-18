@@ -9,6 +9,18 @@
         state: present
         update_cache: yes
 
+    - name: Ensure CA certificates are up to date
+      apt:
+        name: ca-certificates
+        state: latest
+        update_cache: yes
+
+    - name: Install Docker Buildx
+      shell: |
+        mkdir -p ~/.docker/cli-plugins/
+        curl -sSL https://github.com/docker/buildx/releases/download/v0.7.1/buildx-v0.7.1.linux-amd64 -o ~/.docker/cli-plugins/docker-buildx
+        chmod +x ~/.docker/cli-plugins/docker-buildx
+
     - name: Ensure Docker service is running
       service:
         name: docker
@@ -36,7 +48,7 @@
         dest: "/tmp/latest-build/docker/"
 
     - name: Build Docker image for Angular App using Dockerfile
-      shell: docker build -t angular-app:latest /tmp/latest-build/docker
+      shell: docker buildx build --platform linux/amd64 -t angular-app:latest /tmp/latest-build/docker
 
     - name: Run Docker container for Angular App
       docker_container:
