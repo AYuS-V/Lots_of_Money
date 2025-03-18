@@ -1,78 +1,51 @@
 ---
-- name: Check and deploy website on NGINX server
-  hosts: aayush_ubuntu
+- name: Deploy Angular App with Docker
+  hosts: docker_vm
   become: yes
   tasks:
-    - name: Check if NGINX is installed
-      command: nginx -v
-      ignore_errors: yes
-      register: nginx_check
-
-    - name: Install NGINX if not installed
+    - name: Ensure Docker is installed
       apt:
-        name: nginx
+        name: docker.io
         state: present
-      when: nginx_check.rc != 0
+        update_cache: yes
 
-    - name: Ensure NGINX is running
+    - name: Ensure Docker service is running
       service:
-        name: nginx
+        name: docker
         state: started
         enabled: yes
 
-    - name: Remove old website content
-      file:
-        path: /var/www/html/
+    - name: Remove existing Docker container if running
+      docker_container:
+        name: angular-app
         state: absent
 
-    - name: Create website directory
-      file:
-        path: /var/www/html/
-        state: directory
+    - name: Clean up old Docker images
+      shell: docker image prune -f
+      ignore_errors: yes
 
-    - name: Copy website zip file to host
+    - name: Upload the latest build to the server
       copy:
-        src: /home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/lots_of_money.zip
-        dest: /tmp/project.zip
-
-    - name: Unzip website content
-      unarchive:
-        src: /tmp/project.zip
-        dest: /var/www/html/
-        remote_src: yes
-
-    - name: Remove default NGINX configuration
-      file:
-        path: /etc/nginx/sites-enabled/default
-        state: absent
-      notify: Restart NGINX
-
-    - name: Create NGINX configuration for new website
+        src: /local/path/to/latest-build/
+        dest: /tmp/latest-build/
+        mode: "0755"
+    
+    - name: Copy Dockerfile and nginx.conf to the deployment directory
       copy:
-        content: |
-          server {
-              listen 8088;
-              192.168.0.107;
+        src: "docker/"
+        dest: "/tmp/latest-build/docker/"
 
-              root /var/www/html;
-              index index.html index.htm;
+    - name: Build Docker image for Angular App using Dockerfile
+      docker_image:
+        path: "/tmp/latest-build"
+        dockerfile: "/tmp/latest-build/docker/Dockerfile"
+        name: angular-app:latest
 
-              location / {
-                  try_files $uri $uri/ =404;
-              }
-          }
-        dest: /etc/nginx/sites-available/my_website
-      notify: Restart NGINX
-
-    - name: Enable new NGINX site
-      file:
-        src: /etc/nginx/sites-available/my_website
-        dest: /etc/nginx/sites-enabled/my_website
-        state: link
-      notify: Restart NGINX
-
-  handlers:
-    - name: Restart NGINX
-      service:
-        name: nginx
-        state: restarted
+    - name: Run Docker container for Angular App
+      docker_container:
+        name: angular-app
+        image: angular-app:latest
+        state: started
+        ports:
+          - "4545:4545"
+        restart_policy: always
