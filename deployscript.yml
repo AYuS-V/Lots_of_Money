@@ -37,9 +37,10 @@
 
     - name: Build Docker image for Angular App using Dockerfile
       docker_image:
-        path: "/tmp/latest-build/docker/"
-        dockerfile: "/tmp/latest-build/docker/Dockerfile"
         name: angular-app:latest
+        source: build
+        path: /tmp/latest-build/docker
+        state: present
 
     - name: Run Docker container for Angular App
       docker_container:
