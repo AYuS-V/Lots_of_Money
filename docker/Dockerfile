@@ -5,7 +5,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy the built Angular artifacts to nginx html directory
-COPY dist/lots-of-money/ /usr/share/nginx/html/
+COPY app_build/ /usr/share/nginx/html/
 
 # Copy custom nginx configuration
 COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
