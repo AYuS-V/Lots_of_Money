@@ -1,6 +1,6 @@
 ---
 - name: Deploy Angular App with Docker
-  hosts: docker_vm
+  hosts: aayush_ubuntu_server
   become: yes
   tasks:
     - name: Ensure Docker is installed
@@ -26,7 +26,7 @@
 
     - name: Upload the latest build to the server
       copy:
-        src: /local/path/to/latest-build/
+        src: /home/shaikh-aftab/Desktop/jenkins/workspace/angular_pipeline/app_build
         dest: /tmp/latest-build/
         mode: "0755"
     
