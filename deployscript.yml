@@ -24,10 +24,15 @@
         dest: /tmp/latest-build/
         mode: "0755"
     
-    - name: Copy Dockerfile and nginx.conf to the deployment directory
+    - name: Copy nginx.conf to the deployment directory
       copy:
         src: "docker/"
         dest: "/tmp/latest-build/docker/"
+    
+    - name: Copy Dockerfile to the deployment directory
+      copy:
+        src: "./Dockerfile"
+        dest: "/tmp/latest-build"
 
     - name: Build Docker image for Angular App using Dockerfile
       shell: docker build -t angular-app:latest /tmp/latest-build/docker
