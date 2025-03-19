@@ -1,6 +1,6 @@
 ---
 - name: Deploy Angular App with Docker
-  hosts: aayush_ubuntu_server
+  hosts: aayush_ubuntu
   become: yes
   tasks:
     - name: Ensure Docker is installed
