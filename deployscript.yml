@@ -35,7 +35,7 @@
         dest: "/tmp/latest-build"
 
     - name: Build Docker image for Angular App using Dockerfile
-      shell: docker build -t angular-app:latest /tmp/latest-build/docker
+      shell: docker build -t angular-app:latest /tmp/latest-build
 
     - name: Run Docker container for Angular App
       docker_container:
