@@ -1,4 +1,4 @@
-docker-load-balancer-10713753.ap-south-1.elb.amazonaws.com
+http://practice-185017291.ap-south-1.elb.amazonaws.com/
 # Expense Tracker App
 
 An app to track and monitor expenses and income. 
